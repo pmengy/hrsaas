@@ -12,3 +12,25 @@ export function login(data) {
     data
   })
 }
+
+/**
+ * 获取用户信息
+ * @returns promise
+ */
+export function getUserInfoApi() {
+  return request({
+    url: '/sys/profile',
+    method: 'POST'
+  })
+}
+
+/**
+ * 根据用户id 获取员工基本信息
+ * @param {String} id 用户id 
+ * @returns promise
+ */
+export function getUserDetailsApi(id) {
+  return request({
+    url: '/sys/user/' + id
+  })
+}

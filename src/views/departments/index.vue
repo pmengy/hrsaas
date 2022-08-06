@@ -1,14 +1,20 @@
 <template>
   <div class="dashboard-container">
     <div class="app-container">
-      <el-card class="box-card">
+      <el-card v-loading="loading" class="box-card">
         <!-- 头部 -->
-        <tree-tools @add="AddDept" :isRoot="true" :treeNode="company" />
+        <tree-tools
+          @add="AddDept"
+          :isRoot="true"
+          :treeNode="company"
+          @edit="EditDept"
+        />
         <!-- 树形 -->
         <el-tree default-expand-all :data="departs" :props="defaultProps">
           <template v-slot="scope">
             <tree-tools
               @add="AddDept"
+              @edit="EditDept"
               @update="getDepartments"
               :treeNode="scope.data"
             />
@@ -16,6 +22,7 @@
         </el-tree>
         <!-- 新增部门弹出层 -->
         <add-department
+          ref="addDept"
           :visible.sync="dialogVisible"
           :currentDept="currentDept"
           @success="getDepartments"
@@ -39,7 +46,8 @@ export default {
       company: { name: '传智教育', manager: '负责人' },
       departs: [],
       dialogVisible: false,
-      currentDept: {}
+      currentDept: {},
+      loading: false
     }
   },
 
@@ -53,7 +61,9 @@ export default {
 
   methods: {
     async getDepartments() {
+      this.loading = true
       const res = await getDepartments()
+      this.loading = false
       this.departs = transListToTree(res.depts, '')
       this.company.name = res.companyName
       this.company.manager = res.companyManage
@@ -61,6 +71,10 @@ export default {
     AddDept(val) {
       this.dialogVisible = true
       this.currentDept = val
+    },
+    EditDept(val) {
+      this.dialogVisible = true
+      this.$refs.addDept.getDepartmentsById(val.id)
     }
   }
 }

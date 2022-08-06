@@ -34,3 +34,27 @@ export const addDepartment = (data) => {
     data
   })
 }
+
+/**
+ * 根据ID查询部门详情
+ * @param {*} id 部门id
+ * @returns promise
+ */
+export const getDepartmentsById = (id) => {
+  return request({
+    url: `/company/department/${id}`
+  })
+}
+
+/**
+ * 根据ID修改部门详情
+ * @param {Object} data code introduce manager name	pid
+ * @returns promise
+ */
+export const editDepartment = (data) => {
+  return request({
+    url: `/company/department/${data.id}`,
+    method: 'PUT',
+    data
+  })
+}

@@ -1,10 +1,5 @@
 <template>
-  <el-dialog
-    @close="$emit('update:visible', false)"
-    title="新增部门"
-    :visible="visible"
-    width="50%"
-  >
+  <el-dialog @close="close" :title="dialogTitle" :visible="visible" width="50%">
     <el-form
       ref="form"
       :model="formData"
@@ -43,22 +38,47 @@
 </template>
 
 <script>
-import { getDepartments, addDepartment } from '@/api/departments'
+import {
+  getDepartments,
+  addDepartment,
+  getDepartmentsById,
+  editDepartment
+} from '@/api/departments'
 import { getEmployeesApi } from '@/api/employees'
 export default {
   data() {
     // 校验部门名称
-    const checkDeptName = (rule, value, callback) => {
-      this.currentDept.children?.some((item) => item.name === value)
-        ? callback(new Error('部门名称重复'))
-        : callback()
+    const checkDeptName = async (rule, value, callback) => {
+      if (this.formData.id) {
+        const { depts } = await getDepartments()
+        depts
+          .filter(
+            (item) =>
+              item.pid === this.formData.pid && item.id !== this.formData.id
+          )
+          .some((item) => item.name === value)
+          ? callback(new Error('部门名称重复'))
+          : callback()
+      } else {
+        this.currentDept.children?.some((item) => item.name === value)
+          ? callback(new Error('部门名称重复'))
+          : callback()
+      }
     }
     // 校验部门编码
     const checkDeptCode = async (rule, value, callback) => {
       const { depts } = await getDepartments()
-      depts.some((item) => item.code === value)
-        ? callback(new Error('部门编码重复'))
-        : callback()
+      if (this.formData.id) {
+        depts
+          .filter((item) => item.id === this.formData.id)
+          .some((item) => item.name === value)
+          ? callback(new Error('部门编码重复'))
+          : callback()
+      } else {
+        depts.some((item) => item.code === value)
+          ? callback(new Error('部门编码重复'))
+          : callback()
+      }
     }
     return {
       formData: {
@@ -136,6 +156,11 @@ export default {
   created() {
     this.getEmployeesApi()
   },
+  computed: {
+    dialogTitle() {
+      return this.formData.id ? '编辑部门' : '新增部门'
+    }
+  },
 
   methods: {
     // 获取员工列表
@@ -145,14 +170,36 @@ export default {
     },
     async onSave() {
       await this.$refs.form.validate()
-      this.formData.pid = this.currentDept.id
       try {
-        await addDepartment(this.formData)
-        this.$emit('update:visible', false)
-        this.$message.success('新增部门成功')
-        this.$emit('success')
+        if (this.formData.id) {
+          // 编辑
+          await editDepartment(this.formData)
+          this.$message.success('修改成功')
+          this.$emit('update:visible', false)
+          this.$emit('success')
+        } else {
+          // 添加
+          this.formData.pid = this.currentDept.id
+          await addDepartment(this.formData)
+          this.$emit('update:visible', false)
+          this.$message.success('新增部门成功')
+          this.$emit('success')
+        }
       } catch (error) {
-        this.$message.error('网络异常,请稍后重试')
+        this.$message.error('操作部门失败')
+      }
+    },
+    async getDepartmentsById(id) {
+      this.formData = await getDepartmentsById(id)
+    },
+    close() {
+      this.$emit('update:visible', false)
+      this.$refs.form.resetFields()
+      this.formData = {
+        name: '',
+        code: '',
+        manager: '',
+        introduce: ''
       }
     }
   }

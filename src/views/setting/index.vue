@@ -5,7 +5,7 @@
         >新增角色</el-button
       >
       <!-- 表格 -->
-      <el-table border :data="tableData" style="width: 100%">
+      <el-table border :data="tableData" style="width: 100%; margin-top: 20px">
         <el-table-column align="center" type="index" label="序号" width="180">
         </el-table-column>
         <el-table-column align="center" prop="name" label="角色" width="180">
@@ -44,6 +44,24 @@
         show-icon
       >
       </el-alert>
+      <el-form label-width="80px" style="margin-top: 40px; margin-left: 40px">
+        <el-form-item prop="name" label="公司名称" style="width: 480px">
+          <el-input disabled v-model="companyInfo.name"></el-input>
+        </el-form-item>
+        <el-form-item label="公司地址" style="width: 480px">
+          <el-input disabled v-model="companyInfo.companyAddress"></el-input>
+        </el-form-item>
+        <el-form-item label="公司邮箱" style="width: 480px">
+          <el-input disabled v-model="companyInfo.mailbox"></el-input>
+        </el-form-item>
+        <el-form-item label="备注" style="width: 480px">
+          <el-input
+            disabled
+            v-model="companyInfo.remarks"
+            type="textarea"
+          ></el-input>
+        </el-form-item>
+      </el-form>
     </el-tab-pane>
     <!-- 添加角色对话框 -->
     <el-dialog
@@ -75,6 +93,7 @@
 
 <script>
 import { getRolesApi, addRoleApi, removeRoleApi } from '@/api/role'
+import { getCompanyInfoApi } from '@/api/setting'
 export default {
   data() {
     return {
@@ -90,12 +109,14 @@ export default {
       },
       addRoleFormRules: {
         name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }]
-      }
+      },
+      companyInfo: {}
     }
   },
 
   created() {
     this.getRoles()
+    this.getCompanyInfo()
   },
 
   methods: {
@@ -142,6 +163,11 @@ export default {
         this.$message.success('删除角色成功')
         this.getRoles()
       } catch (error) {}
+    },
+    async getCompanyInfo() {
+      const { name, companyAddress, mailbox, remarks } =
+        await getCompanyInfoApi(this.$store.state.user.userInfo.companyId)
+      this.companyInfo = { name, companyAddress, mailbox, remarks }
     }
   }
 }

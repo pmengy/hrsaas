@@ -39,7 +39,7 @@ module.exports = {
     proxy:{
       // 当本地请求有 /api 的时候，就会代理我们的请求地址向另外一个服务器发出请求
       '/api':{
-        target:'http://ihrm.itheima.net/' // 跨域请求的地址
+        target:'http://ihrm-java.itheima.net/' // 跨域请求的地址
       }
     }
   },

@@ -26,11 +26,24 @@ export function getUserInfoApi() {
 
 /**
  * 根据用户id 获取员工基本信息
- * @param {String} id 用户id 
+ * @param {String} id 用户id
  * @returns promise
  */
 export function getUserDetailsApi(id) {
   return request({
     url: '/sys/user/' + id
+  })
+}
+
+/**
+ * 保存员工基本信息
+ * @param {*} data
+ * @returns promise
+ */
+export function saveUserDetailById(data) {
+  return request({
+    url: `/sys/user/${data.id}`,
+    method: 'PUT',
+    data
   })
 }

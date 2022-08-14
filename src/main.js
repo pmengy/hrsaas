@@ -16,7 +16,19 @@ import '@/icons'
 import '@/permission' // permission control
 import * as directives from '@/directives'
 import MyComponents from '@/components'
+import * as filters from '@/filters'
+// 统一注册组件
 Vue.use(MyComponents)
+
+// 统一注册自定义指令
+for (let key in directives) {
+  Vue.directive(key, directives[key])
+}
+
+// 统一注册过滤器
+for (let key in filters) {
+  Vue.filter(key, filters[key])
+}
 
 // 假数据
 if (process.env.NODE_ENV === 'production') {
@@ -28,9 +40,6 @@ if (process.env.NODE_ENV === 'production') {
 Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
-for (let key in directives) {
-  Vue.directive(key, directives[key])
-}
 
 Vue.config.productionTip = false
 

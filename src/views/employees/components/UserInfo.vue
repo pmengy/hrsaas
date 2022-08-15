@@ -58,6 +58,7 @@
         <el-col :span="12">
           <el-form-item label="员工头像">
             <!-- 放置上传图片 -->
+            <UploadImg ref="staffPhoto" @onSuccess="headerImgSuccess" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -93,6 +94,7 @@
 
         <el-form-item label="员工照片">
           <!-- 放置上传图片 -->
+          <UploadImg ref="employeePicture" @onSuccess="employeeImgSuccess" />
         </el-form-item>
         <el-form-item label="国家/地区">
           <el-select v-model="formData.nationalArea" class="inputW2">
@@ -469,17 +471,35 @@ export default {
   methods: {
     async loadUserDetails() {
       this.userInfo = await getUserDetailsApi(this.userId)
+      this.$refs.staffPhoto.fileList.push({ url: this.userInfo.staffPhoto })
     },
     async loadEmployeesInfo() {
       this.formData = await getPersonalDetail(this.userId)
+      this.$refs.employeePicture.fileList.push({
+        url: this.formData.staffPhoto
+      })
     },
     async onSaveUserDetail() {
+      if (this.$refs.staffPhoto.loading) {
+        return this.$message.error('头像正在上传中')
+      }
       await saveUserDetailById(this.userInfo)
       this.$message.success('更新成功')
     },
     async saveUser() {
+      if (this.$refs.employeePicture.loading) {
+        return this.$message.error('头像正在上传中')
+      }
       await updatePersonal(this.formData)
       this.$message.success('更新成功')
+    },
+    // 监听员工头像上传成功
+    headerImgSuccess({ url }) {
+      this.userInfo.staffPhoto = url
+    },
+    // 监听员工照片上传成功
+    employeeImgSuccess({ url }) {
+      this.formData.staffPhoto = url
     }
   }
 }

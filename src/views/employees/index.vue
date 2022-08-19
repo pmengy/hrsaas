@@ -26,6 +26,7 @@
           <el-table-column label="员工">
             <template slot-scope="{ row }">
               <img
+                @click="showErCodeDialog(row.staffPhoto)"
                 v-errorImg="require('@/assets/common/head.jpg')"
                 :src="row.staffPhoto"
                 alt=""
@@ -95,6 +96,12 @@
       @updateEmployee="getEmployeesList"
       :visible.sync="showAddEmployee"
     ></add-employee>
+    <!-- 头像二维码 -->
+    <el-dialog title="头像二维码" :visible.sync="erCodeDialog">
+      <el-row type="flex" justify="center">
+        <canvas id="canvas"></canvas>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -102,6 +109,7 @@
 import { getEmployeesInfoApi, delEmployeeApi } from '@/api/employees'
 import employees from '@/constant/employees'
 import AddEmployee from './components/AddEmployee.vue'
+import QRcode from 'qrcode'
 const { exportExcelMapPath, hireType } = employees
 export default {
   name: 'Employees',
@@ -113,7 +121,8 @@ export default {
         page: 1,
         size: 5
       },
-      showAddEmployee: false
+      showAddEmployee: false,
+      erCodeDialog: false
     }
   },
   components: { AddEmployee },
@@ -173,6 +182,15 @@ export default {
         bookType: 'xlsx'
         // multiHeader: [['姓名', '主要信息', '', '', '', '', '部门']], // 多级表头
         // merges: ['A1:A2', 'B1:F1', 'G1:G2'] // 单元格合并
+      })
+    },
+    showErCodeDialog(staffPhoto) {
+      if (!staffPhoto) return this.$message.warning('该用户还未设置头像')
+      this.erCodeDialog = true
+      // 数据变化驱动视图是异步的
+      this.$nextTick(() => {
+        const canvas = document.getElementById('canvas')
+        QRcode.toCanvas(canvas, staffPhoto)
       })
     }
   }

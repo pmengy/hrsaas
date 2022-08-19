@@ -28,7 +28,7 @@
             <user-info></user-info>
           </el-tab-pane>
           <el-tab-pane name="job" label="岗位信息">
-            <!-- <job-info></job-info> -->
+            <job-info></job-info>
           </el-tab-pane>
         </el-tabs>
       </el-card>

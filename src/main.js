@@ -17,8 +17,10 @@ import '@/permission' // permission control
 import * as directives from '@/directives'
 import MyComponents from '@/components'
 import * as filters from '@/filters'
+import Print from 'vue-print-nb'
 // 统一注册组件
 Vue.use(MyComponents)
+Vue.use(Print)
 
 // 统一注册自定义指令
 for (let key in directives) {

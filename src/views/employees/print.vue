@@ -344,7 +344,7 @@
 
 <script>
 import { getPersonalDetail } from '@/api/employees'
-import { getUserDetail } from '@/api/user'
+import { getUserInfoApi } from '@/api/user'
 export default {
   data() {
     return {
@@ -363,7 +363,7 @@ export default {
       this.formData = await getPersonalDetail(this.userId) // 获取个人基本信息
     },
     async getJobDetail() {
-      const userInfo = await getUserDetail(this.userId)
+      const userInfo = await getUserInfoApi(this.userId)
       const jobInfo = await getJobDetail(this.userId) // 获取个人基本信息
       this.formData = { ...userInfo, ...jobInfo }
     }

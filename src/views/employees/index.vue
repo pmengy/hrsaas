@@ -8,12 +8,17 @@
             size="small"
             type="warning"
             @click="$router.push('/import')"
+            v-isHas="point.employees.import"
             >导入</el-button
           >
           <el-button size="small" type="danger" @click="exportExcel"
             >导出</el-button
           >
-          <el-button size="small" type="primary" @click="showAdd"
+          <el-button
+            size="small"
+            type="primary"
+            @click="showAdd"
+            v-if="hasPermission(point.employees.add)"
             >新增员工</el-button
           >
         </template>
@@ -69,8 +74,17 @@
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
-              <el-button type="text" size="small">角色</el-button>
-              <el-button type="text" size="small" @click="onRemove(row.id)"
+              <el-button
+                type="text"
+                size="small"
+                @click="showAssignRole(row.id)"
+                >角色</el-button
+              >
+              <el-button
+                v-if="hasPermission(point.employees.del)"
+                type="text"
+                size="small"
+                @click="onRemove(row.id)"
                 >删除</el-button
               >
             </template>
@@ -102,6 +116,11 @@
         <canvas id="canvas"></canvas>
       </el-row>
     </el-dialog>
+    <!-- 分配角色 -->
+    <AssignRole
+      :currentEmployeesId="currentEmployeesId"
+      :assignVisible.sync="assignVisible"
+    />
   </div>
 </template>
 
@@ -109,10 +128,13 @@
 import { getEmployeesInfoApi, delEmployeeApi } from '@/api/employees'
 import employees from '@/constant/employees'
 import AddEmployee from './components/AddEmployee.vue'
+import AssignRole from './components/AssignRole.vue'
+import MixinPermission from '@/mixins/permission'
 import QRcode from 'qrcode'
 const { exportExcelMapPath, hireType } = employees
 export default {
   name: 'Employees',
+  mixins: [MixinPermission],
   data() {
     return {
       employees: [],
@@ -121,11 +143,13 @@ export default {
         page: 1,
         size: 5
       },
+      currentEmployeesId: '',
       showAddEmployee: false,
-      erCodeDialog: false
+      erCodeDialog: false,
+      assignVisible: false
     }
   },
-  components: { AddEmployee },
+  components: { AddEmployee, AssignRole },
   created() {
     this.getEmployeesList()
   },
@@ -192,6 +216,10 @@ export default {
         const canvas = document.getElementById('canvas')
         QRcode.toCanvas(canvas, staffPhoto)
       })
+    },
+    showAssignRole(id) {
+      this.assignVisible = true
+      this.currentEmployeesId = id
     }
   }
 }

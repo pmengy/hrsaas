@@ -13,8 +13,10 @@
         <el-table-column align="center" prop="description" label="描述">
         </el-table-column>
         <el-table-column align="center" label="操作">
-          <template slot-scope="scope">
-            <el-button size="small" type="success">分配权限</el-button>
+          <template slot-scope="{ row }">
+            <el-button size="small" type="success" @click="setRights(row.id)"
+              >分配权限</el-button
+            >
             <el-button size="small" type="primary">编辑</el-button>
             <el-button
               size="small"
@@ -88,12 +90,43 @@
         <el-button type="primary" @click="onAddRole">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 分配权限对话框 -->
+    <el-dialog
+      title="分配权限"
+      :visible.sync="setRightsVisible"
+      destroy-on-close
+      @close="setRightsClose"
+      width="50%"
+    >
+      <el-tree
+        ref="perTree"
+        :data="permissions"
+        show-checkbox
+        node-key="id"
+        default-expand-all
+        :default-checked-keys="defaultCheckedKeys"
+        :props="{ label: 'name' }"
+      >
+      </el-tree>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRightsVisible = false">取 消</el-button>
+        <el-button type="primary" @click="onSaveRights">确 定</el-button>
+      </span>
+    </el-dialog>
   </el-tabs>
 </template>
 
 <script>
-import { getRolesApi, addRoleApi, removeRoleApi } from '@/api/role'
+import {
+  getRolesApi,
+  addRoleApi,
+  removeRoleApi,
+  getRolesInfo,
+  assignPrem
+} from '@/api/role'
 import { getCompanyInfoApi } from '@/api/setting'
+import { getPermissionList } from '@/api/permission'
+import { transListToTree } from '@/utils'
 export default {
   data() {
     return {
@@ -110,13 +143,18 @@ export default {
       addRoleFormRules: {
         name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }]
       },
-      companyInfo: {}
+      companyInfo: {},
+      setRightsVisible: false,
+      permissions: [],
+      defaultCheckedKeys: [], // 默认分配权限选中项
+      roleId: ''
     }
   },
 
   created() {
     this.getRoles()
     this.getCompanyInfo()
+    this.getPermissionList()
   },
 
   methods: {
@@ -168,6 +206,29 @@ export default {
       const { name, companyAddress, mailbox, remarks } =
         await getCompanyInfoApi(this.$store.state.user.userInfo.companyId)
       this.companyInfo = { name, companyAddress, mailbox, remarks }
+    },
+    async setRights(id) {
+      this.setRightsVisible = true
+      this.roleId = id
+      const res = await getRolesInfo(id)
+      this.defaultCheckedKeys = res.permIds
+    },
+    async getPermissionList() {
+      const res = await getPermissionList()
+      const treePermission = transListToTree(res, '0')
+      this.permissions = treePermission
+    },
+    setRightsClose() {
+      this.defaultCheckedKeys = []
+    },
+    // 保存角色权限
+    async onSaveRights() {
+      await assignPrem({
+        id: this.roleId,
+        permIds: this.$refs.perTree.getCheckedKeys()
+      })
+      this.$message.success('分配角色成功')
+      this.setRightsVisible = false
     }
   }
 }

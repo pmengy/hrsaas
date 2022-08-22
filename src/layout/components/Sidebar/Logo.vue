@@ -14,12 +14,15 @@ export default {
   props: {
     collapse: {
       type: Boolean,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
-    return {}
-  }
+    return {
+      title: 'Vue Admin Template',
+      logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png',
+    }
+  },
 }
 </script>
 
@@ -46,6 +49,7 @@ export default {
     height: 100%;
     width: 100%;
 
+    // 大图样式
     .sidebar-logo {
       width: 140px;
       vertical-align: middle;

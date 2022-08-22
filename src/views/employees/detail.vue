@@ -25,10 +25,10 @@
             </el-form>
           </el-tab-pane>
           <el-tab-pane name="user" label="个人详情">
-            <user-info></user-info>
+            <user-info />
           </el-tab-pane>
           <el-tab-pane name="job" label="岗位信息">
-            <job-info></job-info>
+            <JobInfo />
           </el-tab-pane>
         </el-tabs>
       </el-card>
@@ -37,38 +37,48 @@
 </template>
 
 <script>
-import { getUserDetailsApi, saveUserDetailById } from '@/api/user'
-import UserInfo from './components/UserInfo.vue'
-import JobInfo from './components/JobInfo.vue'
+import { getUserDetail, saveUserDetailById } from '@/api/user.js'
+import UserInfo from './components/user-info.vue'
+import JobInfo from './components/job-info.vue'
 import Cookies from 'js-cookie'
 export default {
   data() {
     return {
       formData: {},
-      activeName: Cookies.get('employeeDetailActive') || 'account'
+      activeName: Cookies.get('employeeDetailTab') || 'account',
     }
   },
-  components: { UserInfo, JobInfo },
+  // 路由开启props,此时可以接收路由参数
+  props: {
+    id: {
+      required: true,
+      type: String,
+    },
+  },
+
+  components: {
+    UserInfo,
+    JobInfo,
+  },
+
   created() {
-    this.loadUserDetails()
+    this.loadUserDetail()
+    // console.log(this.$attrs)
   },
 
   methods: {
-    async loadUserDetails() {
-      const res = await getUserDetailsApi(this.$route.params.id)
+    async loadUserDetail() {
+      const res = await getUserDetail(this.$route.params.id)
       this.formData = res
-    },
-    async loadEmployeesInfo() {
-      const res = await getPersonalDetail(this.$route.params.id)
     },
     async onSave() {
       await saveUserDetailById(this.formData)
       this.$message.success('更新成功')
     },
     handleTabClick() {
-      Cookies.set('employeeDetailActive', this.activeName)
-    }
-  }
+      Cookies.set('employeeDetailTab', this.activeName)
+    },
+  },
 }
 </script>
 

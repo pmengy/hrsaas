@@ -5,29 +5,30 @@
       class="hamburger-container"
       @toggleClick="toggleSideBar"
     />
+
+    <!-- <breadcrumb class="breadcrumb-container" /> -->
     <div class="app-breadcrumb">
-      {{ userInfo.companyName }}
+      {{ $store.state.user.userInfo.companyName }}
       <span class="breadBtn">体验版</span>
     </div>
-    <!-- <breadcrumb class="breadcrumb-container" /> -->
 
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img
-            :src="userInfo.staffPhoto"
+            :src="$store.state.user.userInfo.staffPhoto + '123'"
             class="user-avatar"
-            v-errorImg="defaultImg"
+            v-imgError="defaultImg"
           />
-          <span>{{ userInfo.username }}</span>
+          <span>{{ $store.state.user.userInfo.username }}</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
-            <el-dropdown-item> 主页 </el-dropdown-item>
+            <el-dropdown-item> Home </el-dropdown-item>
           </router-link>
           <el-dropdown-item divided @click.native="logout">
-            <span style="display: block">登出</span>
+            <span style="display: block">Log Out</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -42,20 +43,18 @@ import Hamburger from '@/components/Hamburger'
 import defaultImg from '@/assets/common/head.jpg'
 
 export default {
+  // 如果想在data中定义本地图片路径,需要先引入
   data() {
     return {
-      defaultImg
+      defaultImg,
     }
   },
   components: {
     Breadcrumb,
-    Hamburger
+    Hamburger,
   },
   computed: {
     ...mapGetters(['sidebar', 'avatar']),
-    userInfo() {
-      return this.$store.state.user.userInfo
-    }
   },
   methods: {
     toggleSideBar() {
@@ -64,8 +63,8 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -76,21 +75,6 @@ export default {
   position: relative;
   background-image: -webkit-linear-gradient(left, #3d6df8, #5b8cff);
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-
-  .hamburger-container {
-    line-height: 46px;
-    height: 100%;
-    float: left;
-    cursor: pointer;
-    transition: background 0.3s;
-    -webkit-tap-highlight-color: transparent;
-    color: #ffffff;
-    fill: currentColor;
-
-    &:hover {
-      background: rgba(0, 0, 0, 0.025);
-    }
-  }
 
   .app-breadcrumb {
     display: inline-block;
@@ -109,6 +93,25 @@ export default {
       border-radius: 10px;
       margin-left: 15px;
     }
+  }
+
+  .hamburger-container {
+    line-height: 46px;
+    height: 100%;
+    float: left;
+    cursor: pointer;
+    transition: background 0.3s;
+    -webkit-tap-highlight-color: transparent;
+    color: #fff;
+    fill: currentColor;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.025);
+    }
+  }
+
+  .breadcrumb-container {
+    float: left;
   }
 
   .right-menu {
@@ -149,7 +152,7 @@ export default {
         cursor: pointer;
 
         span {
-          margin-left: 10px;
+          margin: 0 3px;
         }
 
         .user-avatar {

@@ -14,22 +14,20 @@ const store = new Vuex.Store({
     app,
     settings,
     user,
-    permission
+    permission,
   },
   getters,
   plugins: [
     createVuexPersisted({
-      key: 'hrsaas',
       reducer(state) {
-        // 指定存储某个模块的数据
         return {
           user: {
-            token: state.user.token
-          }
+            token: state.user.token,
+          },
         }
-      }
-    })
-  ]
+      },
+    }),
+  ],
 })
 
 export default store

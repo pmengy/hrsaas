@@ -1,6 +1,6 @@
 <template>
   <section class="app-main">
-    <!-- transition 路由切换过渡动画效果 -->
+    <!-- vue内置的组件: 控制过渡动画 -->
     <transition name="fade-transform" mode="out-in">
       <router-view :key="key" />
     </transition>
@@ -13,8 +13,8 @@ export default {
   computed: {
     key() {
       return this.$route.path
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -25,8 +25,6 @@ export default {
   width: 100%;
   position: relative;
   overflow: hidden;
-  padding-left: 20px;
-  padding-bottom: 20px;
 }
 .fixed-header + .app-main {
   padding-top: 50px;

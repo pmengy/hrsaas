@@ -4,7 +4,6 @@ import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 
 import '@/styles/index.scss' // global css
 import '@/styles/test.scss'
@@ -22,8 +21,10 @@ import components from '@/components'
 // 过滤器封装
 import * as filters from '@/filters'
 import Print from 'vue-print-nb'
+
 // console.log(Print)
 Vue.use(Print)
+import i18n from '@/i18n'
 
 // 统一注册过滤器
 for (let key in filters) {
@@ -43,7 +44,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // 注册element ui
-Vue.use(ElementUI, { locale })
+Vue.use(ElementUI, { i18n: (key, value) => i18n.t(key, value) })
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
 
@@ -58,5 +59,6 @@ new Vue({
   el: '#app',
   router,
   store,
-  render: (h) => h(App),
+  i18n,
+  render: (h) => h(App)
 })

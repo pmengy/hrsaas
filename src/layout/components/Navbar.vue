@@ -13,6 +13,8 @@
     </div>
 
     <div class="right-menu">
+      <ToggleLang />
+      <full-screen />
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img
@@ -46,15 +48,15 @@ export default {
   // 如果想在data中定义本地图片路径,需要先引入
   data() {
     return {
-      defaultImg,
+      defaultImg
     }
   },
   components: {
     Breadcrumb,
-    Hamburger,
+    Hamburger
   },
   computed: {
-    ...mapGetters(['sidebar', 'avatar']),
+    ...mapGetters(['sidebar', 'avatar'])
   },
   methods: {
     toggleSideBar() {
@@ -63,8 +65,8 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-    },
-  },
+    }
+  }
 }
 </script>
 
@@ -115,9 +117,11 @@ export default {
   }
 
   .right-menu {
+    display: flex;
     float: right;
     height: 100%;
     line-height: 50px;
+    align-items: center;
 
     &:focus {
       outline: none;
